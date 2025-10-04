@@ -33,9 +33,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
     }
@@ -92,10 +90,22 @@ dependencies {
     // Activity ile Compose entegrasyonu
     implementation(libs.androidx.activity.compose)
 
+    // Bölüm 6: Navigasyon (Navigation)
+    // Compose'da ekranlar arası geçiş için
+    implementation(libs.androidx.navigation.compose)
+
+    // Bölüm 7: Android Çekirdek ve Yaşam Döngüsü (Core & Lifecycle)
+    // Temel Android bileşenleri ve ViewModel
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
     // Jetpack Compose ile ilgili diğer bağımlılıklarınız
     implementation(libs.androidx.compose.material3)
 
-
+    // Bölüm 8: Serileştirme (Serialization)
+    // Kotlin nesnelerini JSON'a dönüştürmek için
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
