@@ -39,6 +39,7 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 dependencies {
@@ -65,13 +66,36 @@ dependencies {
     // Bölüm 2: Bağımlılık Enjeksiyonu (Dependency Injection)
     // Hilt ile bağımlılıkların yönetimi
     implementation(libs.hilt.android)
+    // Hilt'in Compose Navigation ile entegrasyonu
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.material3)
     ksp(libs.hilt.compiler)
+
+
+    // Bölüm 3: Veritabanı (Database)
+    // Lokal veri depolama için Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx) // Coroutines ve Flow desteği için
+    ksp(libs.androidx.room.compiler) // Derleme zamanında kod üretimi için
+
+    // Bölüm 4: Güvenlik (Security)
+    // Şifrelenmiş SharedPreferences ve dosyalar için
+    implementation(libs.androidx.datastore.preferences)
+
+    // Bölüm 5: Kullanıcı Arayüzü (UI) - Jetpack Compose
+    // Modern ve deklaratif UI oluşturmak için
+    implementation(platform(libs.androidx.compose.bom)) // Kütüphane sürümlerini yönetmek için
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    // Activity ile Compose entegrasyonu
+    implementation(libs.androidx.activity.compose)
 
     // Jetpack Compose ile ilgili diğer bağımlılıklarınız
     implementation(libs.androidx.compose.material3)
 
-    // Hilt'in Compose Navigation ile entegrasyonu
-    implementation(libs.androidx.hilt.navigation.compose)
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
