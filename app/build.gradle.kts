@@ -40,7 +40,10 @@ android {
 }
 
 dependencies {
-
+    // Bölüm 1: Ağ (Network)
+    // API istekleri ve JSON işlemleri için
+    implementation(libs.okhttp)
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
