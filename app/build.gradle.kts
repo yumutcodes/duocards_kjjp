@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.plugin)
 }
 
 android {
@@ -47,7 +49,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     //retrofit
     implementation(libs.retrofit)
-
+    //Moshi:
+//https://aistudio.google.com/prompts/1uelVZYGaR-XlJxqqIDpSVb9i4adSyNsw
     // Moshi'nin ana kütüphanesi
     implementation(libs.moshi)
     /*
@@ -56,6 +59,19 @@ dependencies {
     implementation(libs.moshi.kotlin)
     // Retrofit ile Moshi'yi bağlayan dönüştürücü
     implementation(libs.converter.moshi)
+    // codegen işlemi için
+    ksp(libs.moshi.kotlin.codegen)
+
+    // Bölüm 2: Bağımlılık Enjeksiyonu (Dependency Injection)
+    // Hilt ile bağımlılıkların yönetimi
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // Jetpack Compose ile ilgili diğer bağımlılıklarınız
+    implementation(libs.androidx.compose.material3)
+
+    // Hilt'in Compose Navigation ile entegrasyonu
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
