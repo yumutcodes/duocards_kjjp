@@ -43,7 +43,19 @@ dependencies {
     // Bölüm 1: Ağ (Network)
     // API istekleri ve JSON işlemleri için
     implementation(libs.okhttp)
+    //libs.logging.interceptor
+    implementation(libs.logging.interceptor)
+    //retrofit
+    implementation(libs.retrofit)
+
+    // Moshi'nin ana kütüphanesi
+    implementation(libs.moshi)
+    /*
+    json işlemleri için moshi
+     */
     implementation(libs.moshi.kotlin)
+    // Retrofit ile Moshi'yi bağlayan dönüştürücü
+    implementation(libs.converter.moshi)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
