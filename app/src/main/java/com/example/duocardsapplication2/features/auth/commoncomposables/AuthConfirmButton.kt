@@ -5,16 +5,31 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.duocardsapplication2.core.utiluties.ui.UiState
+
+/*
+when(uiState){
+        UiState.Loading -> CircularProgressIndicator()
+        UiState.Idle -> Button(
+            onClick = onClick,
+        ) {
+            Text(buttonText)
+        }
+        else -> {}
+    }
+    kullanılabilir belki
+ */
 
 @Composable
 fun AuthConfirmButton(
     onClick:() ->Unit,
     buttonText:String,
-    enabled:Boolean ,
+    uiState: UiState<Nothing>,
 
 
-){
-    if(enabled){
+    ){
+
+    if(UiState.Idle == uiState){
         Button(
             onClick = onClick,
 
@@ -23,7 +38,7 @@ fun AuthConfirmButton(
             Text(buttonText)
         }
     }
-    else{
+    if(UiState.Loading == uiState){
         CircularProgressIndicator()
     }
 }
@@ -33,7 +48,7 @@ fun AuthButtonPreview(){
     AuthConfirmButton(
         onClick = {},
         buttonText = "Register",
-        enabled = true
+        uiState = UiState.Idle
     )
 
 }
@@ -43,7 +58,7 @@ fun AuthButtonPreviewNotEnabled(){
     AuthConfirmButton(
         onClick = {},
         buttonText = "Register",
-        enabled = false
+        uiState = UiState.Loading
     )
 
 }

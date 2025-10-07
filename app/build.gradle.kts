@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.plugin)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -48,18 +49,7 @@ dependencies {
     implementation(libs.logging.interceptor)
     //retrofit
     implementation(libs.retrofit)
-    //Moshi:
-//https://aistudio.google.com/prompts/1uelVZYGaR-XlJxqqIDpSVb9i4adSyNsw
-    // Moshi'nin ana kütüphanesi
-    implementation(libs.moshi)
-    /*
-    json işlemleri için moshi
-     */
-    implementation(libs.moshi.kotlin)
-    // Retrofit ile Moshi'yi bağlayan dönüştürücü
-    implementation(libs.converter.moshi)
-    // codegen işlemi için
-    ksp(libs.moshi.kotlin.codegen)
+
 
     // Bölüm 2: Bağımlılık Enjeksiyonu (Dependency Injection)
     // Hilt ile bağımlılıkların yönetimi
@@ -105,23 +95,37 @@ dependencies {
 
     // Bölüm 8: Serileştirme (Serialization)
     // Kotlin nesnelerini JSON'a dönüştürmek için
-    implementation(libs.kotlinx.serialization.json)
+    //serialaztion moshi rakibi ama moshi daha iyi galiba
+   implementation(libs.kotlinx.serialization.json)
+    //Moshi:
+//https://aistudio.google.com/prompts/1uelVZYGaR-XlJxqqIDpSVb9i4adSyNsw
+    // Moshi'nin ana kütüphanesi
+    implementation(libs.moshi)
+    /*
+    json işlemleri için moshi
+     */
+    implementation(libs.moshi.kotlin)
+    // Retrofit ile Moshi'yi bağlayan dönüştürücü
+    implementation(libs.converter.moshi)
+    // codegen işlemi için
+    ksp(libs.moshi.kotlin.codegen)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+    // Bölüm 9: Test Kütüphaneleri
+    // Birim ve UI testleri için
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(platform(libs.androidx.compose.bom)) // Testler için de BOM kullanımı
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Bölüm 10: Hata Ayıklama (Debug)
+    // Sadece debug derlemelerinde kullanılan araçlar
+//    debugImplementation(libs.androidx.ui.tooling)
+//    debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {

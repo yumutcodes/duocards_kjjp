@@ -1,4 +1,4 @@
-package com.example.duocardsapplication2.ui.theme
+package com.example.duocardsapplication2.core.utiluties.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
