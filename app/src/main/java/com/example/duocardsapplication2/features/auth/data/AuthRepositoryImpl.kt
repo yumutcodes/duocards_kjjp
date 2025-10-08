@@ -10,14 +10,15 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(private val api: AuthApiService) : IAuthRepository {
     override suspend fun login (loginRequest: LoginRequest): Resource<LoginResponse> = withContext(Dispatchers.IO) {
-        runCatching {
-            val response = api.login(loginRequest)
-            if (response.isSuccessful) {
-              re  Resource<LoginResponse>.Success(response.body()!!)
-            } else {
-                Resource.Error(response.message())
-            }
-        }
+        return@withContext Resource<Unit>.Success<LoginResponse>("Login successful")
+//        runCatching {
+//            val response = api.login(loginRequest)
+//            if (response.isSuccessful) {
+//              re  Resource<LoginResponse>.Success(response.body()!!)
+//            } else {
+//                Resource.Error(response.message())
+//            }
+//        }
     }
 
 
