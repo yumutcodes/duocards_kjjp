@@ -14,6 +14,7 @@ import timber.log.Timber
 
 
 /*
+https://claude.ai/chat/86dba095-2789-45f3-a2b0-e67bf0087c77
 https://chatgpt.com/c/68e6649d-2038-8325-b2ec-d0f7379d69fe
 buna bak
  */

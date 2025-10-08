@@ -1,8 +1,11 @@
 package com.example.duocardsapplication2.features.auth.login.presentation
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.duocardsapplication2.core.utiluties.result.Resource
 import com.example.duocardsapplication2.core.utiluties.ui.UiState
+import com.example.duocardsapplication2.features.auth.data.requests.LoginRequest
 import com.example.duocardsapplication2.features.auth.domain.IAuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +30,31 @@ class LoginViewModel @Inject constructor
     }
     fun onAuthConfirmButtonClicked(){
         viewModelScope.launch{
+            _uiState.value = _uiState.value.copy(loginState = UiState.Loading)
+            val result = repo.login(
+                LoginRequest(
+                    email = _uiState.value.emailText,
+                    password = _uiState.value.passwordText
+                )
+                )
+               when(result){
+                   is Resource.Success -> {
+                       _uiState.value = _uiState.value.copy(loginState = UiState.Success)
+                   }
+                   is Resource.Error -> {
+                       _uiState.value = _uiState.value.copy(loginState = UiState.Error(result.message))
+                   }
+               }
 
+
+try {
+
+}
+catch (
+    e: Exception
+){
+
+}
         }
       _uiState.value = _uiState.value.copy(loginState = UiState.Loading)
     }
