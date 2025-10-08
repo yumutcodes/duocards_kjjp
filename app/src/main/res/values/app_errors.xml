@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ============================================ -->
+    <!-- Network Error Messages -->
+    <!-- ============================================ -->
+    <string name="error_no_connection">No internet connection. Please check your network settings and try again.</string>
+    <string name="error_timeout">The connection timed out. Please check your internet connection and try again.</string>
+    <string name="error_server">Couldn\'t connect to the server. Please try again later.</string>
+    <string name="error_ssl">A secure connection could not be established. Please check your network and device time settings.</string>
+    <string name="error_network">An unexpected network error occurred. Please try again.</string>
+
+    <!-- ============================================ -->
+    <!-- API Error Messages -->
+    <!-- ============================================ -->
+    <string name="error_bad_request">The request was invalid. Please try again.</string>
+    <string name="error_unauthorized">You are not authorized to perform this action. Please log in again.</string>
+    <string name="error_forbidden">You don\'t have permission to access this.</string>
+    <string name="error_not_found">The requested item could not be found.</string>
+    <string name="error_conflict">There was a conflict with the data. Please check your input and try again.</string>
+    <string name="error_validation">The information provided is invalid. Please correct it and resubmit.</string>
+    <string name="error_rate_limited">You have made too many requests. Please wait a moment and try again.</string>
+    <string name="error_server_internal">An internal server error occurred. We are working to fix the issue.</string>
+    <string name="error_server_gateway">The server is temporarily unavailable. Please try again in a few moments.</string>
+    <string name="error_server_unavailable">The service is currently unavailable. Please try again later.</string>
+    <string name="error_server_timeout">The server took too long to respond. Please try again.</string>
+
+    <!-- ============================================ -->
+    <!-- Database Error Messages -->
+    <!-- ============================================ -->
+    <string name="error_db_read">Failed to read from the local database.</string>
+    <string name="error_db_write">Failed to save data to the local database.</string>
+    <string name="error_db_delete">Failed to delete data from the local database.</string>
+    <string name="error_db_not_found">The requested data was not found in the local database.</string>
+    <string name="error_db_constraint">A database constraint was violated. Please check your data.</string>
+    <string name="error_db_unknown">An unknown database error occurred.</string>
+
+    <!-- ============================================ -->
+    <!-- Validation Error Messages -->
+    <!-- ============================================ -->
+    <string name="error_field_required">%1$s is required.</string>
+    <string name="error_invalid_format">%1$s is not in a valid format. Expected format: %2$s.</string>
+    <string name="error_too_short">%1$s must be at least %2$d characters long.</string>
+    <string name="error_too_long">%1$s cannot be more than %2$d characters long.</string>
+
+    <!-- ============================================ -->
+    <!-- Authentication Error Messages -->
+    <!-- ============================================ -->
+    <string name="error_token_expired">Your session has expired. Please log in again.</string>
+    <string name="error_token_invalid">Your session is invalid. Please log in again.</string>
+    <string name="error_invalid_credentials">Invalid email or password. Please try again.</string>
+    <string name="error_session_expired">Your session has expired. Please log in again to continue.</string>
+    <string name="error_2fa_required">Two-factor authentication is required for this account.</string>
+    <string name="error_account_locked">This account has been locked due to too many failed login attempts. Please try again later.</string>
+
+    <!-- ============================================ -->
+    <!-- Unknown Error Message -->
+    <!-- ============================================ -->
+    <string name="error_unknown">An unexpected error occurred. Please try again.</string>
+
+    <!-- ============================================ -->
+    <!-- Error Titles (For Dialogs, Snackbars etc.) -->
+    <!-- ============================================ -->
+    <string name="error_title_network">Network Error</string>
+    <string name="error_title_server">Server Error</string>
+    <string name="error_title_database">Database Error</string>
+    <string name="error_title_validation">Invalid Input</string>
+    <string name="error_title_auth">Authentication Error</string>
+    <string name="error_title_unknown">An Error Occurred</string>
+</resources>

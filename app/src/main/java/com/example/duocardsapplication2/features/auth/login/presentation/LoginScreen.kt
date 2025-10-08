@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.duocardsapplication2.core.utiluties.ui.preview.DevicePreviews
+import com.example.duocardsapplication2.core.utiluties.ui.preview.ThemePreviews
 import com.example.duocardsapplication2.features.auth.commoncomposables.AuthConfirmButton
 import com.example.duocardsapplication2.features.auth.commoncomposables.AuthTextField
 import com.example.duocardsapplication2.features.auth.commoncomposables.NavButton
@@ -32,7 +34,8 @@ fun LoginScreen(
     LoginScreenContent(
         uiState = viewModel.uiState.collectAsState().value,
         onEmailChanged = viewModel::onEmailChanged,
-        navigateToRegister = navigateToRegister
+        navigateToRegister = navigateToRegister,
+
     )
 }
 
@@ -73,18 +76,20 @@ fun LoginScreenContent(
         AuthConfirmButton(
             onClick = {},
             buttonText = "Login",
-            enabled = true
+           uiState = uiState.loginState
         )
 
     }
 }
-@Preview
+@DevicePreviews
+@ThemePreviews
 @Composable
 fun LoginScreenPreview() {
     LoginScreenContent(
         uiState = LoginUiState(),
         onEmailChanged = {},
-        navigateToRegister = {}
+       navigateToRegister = {}
+
     )
 }
 
