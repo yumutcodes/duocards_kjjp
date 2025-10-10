@@ -1,33 +1,38 @@
 package com.example.duocardsapplication2.features.auth.data
 
+import com.example.duocardsapplication2.core.utiluties.error.ErrorMapper
 import com.example.duocardsapplication2.core.utiluties.result.Resource
-import com.example.duocardsapplication2.features.auth.data.requests.LoginRequest
-import com.example.duocardsapplication2.features.auth.data.requests.LoginResponse
+import com.example.duocardsapplication2.features.auth.data.dto.LoginRequest
+import com.example.duocardsapplication2.features.auth.data.dto.LoginResponse
 import com.example.duocardsapplication2.features.auth.domain.IAuthRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import java.io.IOException
 
-class AuthRepositoryImpl @Inject constructor(private val api: AuthApiService) : IAuthRepository {
-    override suspend fun login (loginRequest: LoginRequest): Resource<LoginResponse> = withContext(Dispatchers.IO) {
-        return@withContext Resource<Unit>.Success<LoginResponse>("Login successful")
-//        runCatching {
-//            val response = api.login(loginRequest)
-//            if (response.isSuccessful) {
-//              re  Resource<LoginResponse>.Success(response.body()!!)
-//            } else {
-//                Resource.Error(response.message())
-//            }
-//        }
-    }
-
-
+class AuthRepositoryImpl @Inject constructor(private val api: AuthApiService,  private val errorMapper: ErrorMapper) : IAuthRepository {
+    override  fun login(req: LoginRequest, ): Flow<Resource<LoginResponse>> = flow {
+        emit(Resource.Loading)
+        try {
+            val res = api.login(req)
+            if (res.isSuccessful) {
+                res.body()?.let { emit(Resource.Success(it)) }
+                    ?: emit(Resource.Error(errorMapper.mapHttpCode(res.code())))
+            } else {
+                emit(Resource.Error(errorMapper.mapHttpCode(res.code())))
+            }
+        } catch (t: Throwable) {
+            emit(Resource.Error(errorMapper.mapToAppError(t)))
+        }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun register(
         email: String,
         password: String
-    ): Result<Unit> {
+    ): Flow<Result<Unit>> {
         TODO("Not yet implemented")
     }
-
 }

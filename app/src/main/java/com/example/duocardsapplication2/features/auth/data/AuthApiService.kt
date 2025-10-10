@@ -1,6 +1,6 @@
 package com.example.duocardsapplication2.features.auth.data
 
-import com.example.duocardsapplication2.features.auth.data.requests.*
+import com.example.duocardsapplication2.features.auth.data.dto.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

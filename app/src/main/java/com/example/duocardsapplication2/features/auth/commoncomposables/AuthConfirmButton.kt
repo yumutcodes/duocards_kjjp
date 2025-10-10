@@ -6,6 +6,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.duocardsapplication2.core.utiluties.ui.UiState
+import com.example.duocardsapplication2.features.auth.data.dto.LoginResponse
+import com.example.duocardsapplication2.features.auth.login.presentation.LoginUiState
 
 /*
 when(uiState){
@@ -24,7 +26,7 @@ when(uiState){
 fun AuthConfirmButton(
     onClick:() ->Unit,
     buttonText:String,
-    uiState: UiState<Nothing>,
+    uiState: UiState<LoginResponse>,
 
 
     ){
