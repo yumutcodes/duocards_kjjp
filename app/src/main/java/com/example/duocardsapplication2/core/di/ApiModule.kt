@@ -12,9 +12,26 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
     
+    /**
+     * Provides the main AuthApiService with authentication
+     * Used for all authenticated API calls
+     */
     @Provides
     @Singleton
     fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
+        return retrofit.create(AuthApiService::class.java)
+    }
+    
+    /**
+     * Provides an unauthenticated AuthApiService for refresh token calls
+     * This prevents circular dependency with TokenAuthenticator
+     */
+    @Provides
+    @Singleton
+    @UnauthenticatedClient
+    fun provideUnauthenticatedAuthApiService(
+        @UnauthenticatedClient retrofit: Retrofit
+    ): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
     }
 }

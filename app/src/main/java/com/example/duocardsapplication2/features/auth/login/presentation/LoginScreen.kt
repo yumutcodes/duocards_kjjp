@@ -31,15 +31,17 @@ fun LoginScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Handle successful login navigation
-    LaunchedEffect(uiState.loginState) {
-        if (uiState.loginState is UiState.Success) {
-            navigateToHome()
+    // Event-driven navigation
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is LoginNavigationEvent.NavigateToHome -> navigateToHome()
+            }
         }
     }
 
     LoginScreenContent(
-        uiState = viewModel.uiState.collectAsState().value,
+        uiState = uiState,
         onEmailChanged = viewModel::onEmailChanged,
         onPasswordChanged = viewModel::onPasswordChanged,
         onAuthConfirmButtonClicked = viewModel::onAuthConfirmButtonClicked,
@@ -69,14 +71,16 @@ fun LoginScreenContent(
             value = uiState.emailText,
             onInputChanged = onEmailChanged,
             isValid = uiState.isEmailValid,
-            labelText = "Email"
+            labelText = "Email",
+            ErrorText = "Invalid email"
 
         )
         AuthTextField(
             value = uiState.passwordText,
             onInputChanged = onPasswordChanged,
             isValid = uiState.isPasswordValid,
-            labelText = "Password"
+            labelText = "Password",
+            ErrorText = "Invalid password"
         )
         NavButton(
             infoText = "Don't have an account? Register",

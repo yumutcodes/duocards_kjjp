@@ -4,16 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.duocardsapplication2.core.data.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class SplashNavigationState {
-    object Idle : SplashNavigationState()
-    object NavigateToLogin : SplashNavigationState()
-    object NavigateToHome : SplashNavigationState()
+sealed class SplashNavigationEvent {
+    object NavigateToLogin : SplashNavigationEvent()
+    object NavigateToHome : SplashNavigationEvent()
 }
 
 @HiltViewModel
@@ -21,8 +19,8 @@ class SplashViewModel @Inject constructor(
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
-    private val _navigationState = MutableStateFlow<SplashNavigationState>(SplashNavigationState.Idle)
-    val navigationState: StateFlow<SplashNavigationState> = _navigationState.asStateFlow()
+    private val _navigationEvent = Channel<SplashNavigationEvent>(Channel.BUFFERED)
+    val navigationEvent = _navigationEvent.receiveAsFlow()
 
     init {
         checkAuthStatus()
@@ -31,11 +29,12 @@ class SplashViewModel @Inject constructor(
     private fun checkAuthStatus() {
         viewModelScope.launch {
             val hasToken = tokenManager.hasValidToken()
-            _navigationState.value = if (hasToken) {
-                SplashNavigationState.NavigateToHome
+            val event = if (hasToken) {
+                SplashNavigationEvent.NavigateToHome
             } else {
-                SplashNavigationState.NavigateToLogin
+                SplashNavigationEvent.NavigateToLogin
             }
+            _navigationEvent.send(event)
         }
     }
 }

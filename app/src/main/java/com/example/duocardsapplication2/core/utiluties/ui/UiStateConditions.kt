@@ -10,5 +10,6 @@ sealed interface UiState<out T> {
     data class Success<T>(val data: T) : UiState<T> // Başarılı durumu, veri içerir
     @Serializable
     data class Error(val message: UiText) : UiState<Nothing> // Hata durumu, hata mesajı içerir
+    @Serializable
     object Idle : UiState<Nothing> // Başlangıç durumu
 }

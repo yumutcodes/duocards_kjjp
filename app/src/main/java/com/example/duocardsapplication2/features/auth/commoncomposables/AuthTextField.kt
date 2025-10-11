@@ -17,6 +17,7 @@ fun AuthTextField(
     onInputChanged: (String) -> Unit,
     isValid: Boolean,
     labelText: String,
+    ErrorText: String
 ){
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
@@ -34,7 +35,7 @@ fun AuthTextField(
     // Eğer giriş geçerli değilse, hata mesajını göster
     if (!isValid) {
         Text(
-            text = labelText,
+            text = ErrorText,
             color = Color.Red,
             modifier = Modifier
                 .padding(top = 4.dp)

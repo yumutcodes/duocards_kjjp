@@ -3,19 +3,26 @@ package com.example.duocardsapplication2.features.auth.login.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.duocardsapplication2.core.data.TokenManager
+import com.example.duocardsapplication2.core.utiluties.error.AppError
 import com.example.duocardsapplication2.core.utiluties.ui.UiState
 import com.example.duocardsapplication2.core.utiluties.result.Resource
-import com.example.duocardsapplication2.core.utiluties.ui.UiText
 import com.example.duocardsapplication2.features.auth.data.dto.LoginRequest
+import com.example.duocardsapplication2.features.auth.data.dto.LoginResponse
 import com.example.duocardsapplication2.features.auth.domain.IAuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class LoginNavigationEvent {
+    object NavigateToHome : LoginNavigationEvent()
+}
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -26,60 +33,92 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
+    private val _navigationEvent = Channel<LoginNavigationEvent>(Channel.BUFFERED)
+    val navigationEvent = _navigationEvent.receiveAsFlow()
+
     fun onEmailChanged(newEmail: String) {
-        _uiState.update { currentState ->
-            currentState.copy(emailText = newEmail)
-        }
+        _uiState.update { it.copy(emailText = newEmail) }
     }
 
     fun onPasswordChanged(newPassword: String) {
-        _uiState.update { currentState ->
-            currentState.copy(passwordText = newPassword)
-        }      }
+        _uiState.update { it.copy(passwordText = newPassword) }
+    }
 
     fun onAuthConfirmButtonClicked() {
         viewModelScope.launch {
-            // Prevent duplicate submissions while loading
             if (_uiState.value.loginState is UiState.Loading) return@launch
+            
+            if (!validateAndUpdateState()) return@launch
+            
+            performLogin()
+        }
+    }
 
-            // Basic validation
-            val email = _uiState.value.emailText.trim()
-            val password = _uiState.value.passwordText
-            val isEmailValid = email.contains("@") && email.contains(".")
-            val isPasswordValid = password.length >= 6
+    private fun validateAndUpdateState(): Boolean {
+        val state = _uiState.value
+        val email = state.emailText.trim()
+        val password = state.passwordText
 
-            _uiState.value = _uiState.value.copy(
-                isEmailValid = isEmailValid,
-                isPasswordValid = isPasswordValid
+        val emailError = validateEmail(email)
+        val passwordError = validatePassword(password)
+
+        _uiState.update {
+            it.copy(
+                isEmailValid = emailError == null,
+                isPasswordValid = passwordError == null
             )
-            if (!isEmailValid || !isPasswordValid) return@launch
+        }
 
-            // Map repository Resource<> emissions to UiState
-            repo.login(LoginRequest(email = email, password = password))
-                .collectLatest { res ->
-                    when (res) {
-                        is Resource.Loading -> {
-                            _uiState.value = _uiState.value.copy(
-                                loginState = UiState.Loading
-                            )
-                        }
-                        is Resource.Success -> {
-                            // Save tokens
-                            tokenManager.saveTokens(
-                                accessToken = res.data.token,
-                                refreshToken = res.data.refreshToken
-                            )
-                            _uiState.value = _uiState.value.copy(
-                                loginState = UiState.Success(res.data)
-                            )
-                        }
-                        is Resource.Error -> {
-                            _uiState.value = _uiState.value.copy(
-                                loginState = UiState.Error(res.error.uiText)
-                            )
-                        }
-                    }
-                }
+        return emailError == null && passwordError == null
+    }
+
+    private suspend fun performLogin() {
+        val state = _uiState.value
+        val request = LoginRequest(
+            email = state.emailText.trim(),
+            password = state.passwordText
+        )
+
+        repo.login(request).collectLatest { resource ->
+            when (resource) {
+                is Resource.Loading -> handleLoading()
+                is Resource.Success -> handleSuccess(resource.data)
+                is Resource.Error -> handleError(resource.error)
+            }
+        }
+    }
+
+    private fun handleLoading() {
+        _uiState.update { it.copy(loginState = UiState.Loading) }
+    }
+
+    private suspend fun handleSuccess(data: LoginResponse) {
+        tokenManager.saveTokens(
+            accessToken = data.token,
+            refreshToken = data.refreshToken
+        )
+        _uiState.update { it.copy(loginState = UiState.Success(data)) }
+        _navigationEvent.send(LoginNavigationEvent.NavigateToHome)
+    }
+
+    private fun handleError(error: AppError) {
+        _uiState.update { it.copy(loginState = UiState.Error(error.uiText)) }
+    }
+
+    private fun validateEmail(email: String): AppError? {
+        return when {
+            email.isEmpty() -> AppError.FieldRequired("Email")
+            !email.contains("@") || !email.contains(".") -> 
+                AppError.InvalidFormat("Email", "example@domain.com")
+            else -> null
+        }
+    }
+
+    private fun validatePassword(password: String): AppError? {
+        return when {
+            password.isEmpty() -> AppError.FieldRequired("Password")
+            password.length < 6 -> AppError.InvalidFormat("Password", "at least 6 characters")
+            else -> null
         }
     }
 }

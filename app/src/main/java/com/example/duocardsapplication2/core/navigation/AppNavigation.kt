@@ -43,15 +43,13 @@ fun AppNavigation(){
             composable<Screens.Login>{
                 LoginScreen(
                     navigateToRegister = {
-                        navController.navigate(Screens.Register){
-                            popUpTo(Screens.Login){
-                                inclusive = true
-                            }
-                        }
+                        // Simple navigation - allows back button to work
+                        navController.navigate(Screens.Register)
                     },
                     navigateToHome = {
                         navController.navigate(Screens.Home){
-                            popUpTo(Screens.Login){
+                            // Clear entire auth flow from back stack
+                            popUpTo(0) {
                                 inclusive = true
                             }
                         }
@@ -62,15 +60,13 @@ fun AppNavigation(){
             composable<Screens.Register>{
                 RegisterScreen(
                     navigateToLogin = {
-                        navController.navigate(Screens.Login){
-                            popUpTo(Screens.Register){
-                                inclusive = true
-                            }
-                        }
+                        // Pop back to Login instead of creating new instance
+                        navController.popBackStack()
                     },
                     navigateToHome = {
                         navController.navigate(Screens.Home){
-                            popUpTo(Screens.Register){
+                            // Clear entire auth flow from back stack
+                            popUpTo(0) {
                                 inclusive = true
                             }
                         }

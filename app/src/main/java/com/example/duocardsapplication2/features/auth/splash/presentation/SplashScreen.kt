@@ -23,13 +23,12 @@ fun SplashScreen(
     navigateToLogin: () -> Unit,
     navigateToHome: () -> Unit
 ) {
-    val navigationState by viewModel.navigationState.collectAsState()
-
-    LaunchedEffect(navigationState) {
-        when (navigationState) {
-            is SplashNavigationState.NavigateToLogin -> navigateToLogin()
-            is SplashNavigationState.NavigateToHome -> navigateToHome()
-            is SplashNavigationState.Idle -> { /* Do nothing */ }
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is SplashNavigationEvent.NavigateToLogin -> navigateToLogin()
+                is SplashNavigationEvent.NavigateToHome -> navigateToHome()
+            }
         }
     }
 

@@ -13,20 +13,51 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthenticatedClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class UnauthenticatedClient
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     
+    /**
+     * Provides a basic OkHttpClient without authentication for refresh token calls
+     * This prevents circular dependency issues
+     */
     @Provides
     @Singleton
-    fun provideOkHttpClient(
-        authInterceptor: AuthInterceptor
+    @UnauthenticatedClient
+    fun provideUnauthenticatedOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(LoggingConfig.createLoggingInterceptor())
+            .connectTimeout(NetworkConstants.CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(NetworkConstants.READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(NetworkConstants.WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .build()
+    }
+    
+    /**
+     * Provides the main OkHttpClient with authentication interceptor and authenticator
+     */
+    @Provides
+    @Singleton
+    @AuthenticatedClient
+    fun provideAuthenticatedOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: com.example.duocardsapplication2.core.network.TokenAuthenticator
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(LoggingConfig.createLoggingInterceptor())
+            .authenticator(tokenAuthenticator)
             .connectTimeout(NetworkConstants.CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NetworkConstants.READ_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(NetworkConstants.WRITE_TIMEOUT, TimeUnit.SECONDS)
@@ -41,10 +72,30 @@ object NetworkModule {
             .build()
     }
     
+    /**
+     * Provides Retrofit for refresh token calls (no authentication)
+     */
+    @Provides
+    @Singleton
+    @UnauthenticatedClient
+    fun provideUnauthenticatedRetrofit(
+        @UnauthenticatedClient okHttpClient: OkHttpClient,
+        moshi: Moshi
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(NetworkConstants.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+    }
+    
+    /**
+     * Provides the main Retrofit instance with authentication
+     */
     @Provides
     @Singleton
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
+        @AuthenticatedClient okHttpClient: OkHttpClient,
         moshi: Moshi
     ): Retrofit {
         return Retrofit.Builder()

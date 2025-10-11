@@ -30,10 +30,12 @@ fun RegisterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Handle successful registration navigation
-    LaunchedEffect(uiState.registerState) {
-        if (uiState.registerState is UiState.Success) {
-            navigateToHome()
+    // Event-driven navigation
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is RegisterNavigationEvent.NavigateToHome -> navigateToHome()
+            }
         }
     }
 
@@ -72,25 +74,29 @@ fun RegisterScreenContent(
             value = uiState.fullNameText,
             onInputChanged = onFullNameChanged,
             isValid = uiState.isFullNameValid,
-            labelText = "Full Name"
+            labelText = "Full Name",
+            ErrorText = "Invalid full name"
         )
         AuthTextField(
             value = uiState.emailText,
             onInputChanged = onEmailChanged,
             isValid = uiState.isEmailValid,
-            labelText = "Email"
+            labelText = "Email",
+            ErrorText = "Invalid email"
         )
         AuthTextField(
             value = uiState.passwordText,
             onInputChanged = onPasswordChanged,
             isValid = uiState.isPasswordValid,
-            labelText = "Password"
+            labelText = "Password",
+            ErrorText = "Invalid password"
         )
         AuthTextField(
             value = uiState.confirmPasswordText,
             onInputChanged = onConfirmPasswordChanged,
             isValid = uiState.isPasswordsMatch,
-            labelText = "Confirm Password"
+            labelText = "Confirm Password",
+            ErrorText = "Passwords do not match"
         )
         NavButton(
             infoText = "Already have an account?",
