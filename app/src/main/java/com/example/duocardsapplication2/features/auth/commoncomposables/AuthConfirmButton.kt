@@ -23,19 +23,14 @@ when(uiState){
  */
 
 @Composable
-fun AuthConfirmButton(
+fun <T> AuthConfirmButton(
     onClick:() ->Unit,
     buttonText:String,
-    uiState: UiState<LoginResponse>,
-
-
-    ){
-
+    uiState: UiState<T>
+){
     if(UiState.Idle == uiState){
         Button(
-            onClick = onClick,
-
-
+            onClick = onClick
         ) {
             Text(buttonText)
         }

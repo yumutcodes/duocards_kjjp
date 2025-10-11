@@ -1,12 +1,11 @@
-package com.example.duocardsapplication2.features.auth.login.presentation
+package com.example.duocardsapplication2.features.auth.register.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.duocardsapplication2.core.data.TokenManager
 import com.example.duocardsapplication2.core.utiluties.ui.UiState
 import com.example.duocardsapplication2.core.utiluties.result.Resource
-import com.example.duocardsapplication2.core.utiluties.ui.UiText
-import com.example.duocardsapplication2.features.auth.data.dto.LoginRequest
+import com.example.duocardsapplication2.features.auth.data.dto.RegisterRequest
 import com.example.duocardsapplication2.features.auth.domain.IAuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,13 +17,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class RegisterViewModel @Inject constructor(
     private val repo: IAuthRepository,
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(RegisterUiState())
+    val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
+
+    fun onFullNameChanged(newFullName: String) {
+        _uiState.update { currentState ->
+            currentState.copy(fullNameText = newFullName)
+        }
+    }
 
     fun onEmailChanged(newEmail: String) {
         _uiState.update { currentState ->
@@ -35,32 +40,47 @@ class LoginViewModel @Inject constructor(
     fun onPasswordChanged(newPassword: String) {
         _uiState.update { currentState ->
             currentState.copy(passwordText = newPassword)
-        }      }
+        }
+    }
 
-    fun onAuthConfirmButtonClicked() {
+    fun onConfirmPasswordChanged(newConfirmPassword: String) {
+        _uiState.update { currentState ->
+            currentState.copy(confirmPasswordText = newConfirmPassword)
+        }
+    }
+
+    fun onRegisterButtonClicked() {
         viewModelScope.launch {
             // Prevent duplicate submissions while loading
-            if (_uiState.value.loginState is UiState.Loading) return@launch
+            if (_uiState.value.registerState is UiState.Loading) return@launch
 
-            // Basic validation
+            // Validation
+            val fullName = _uiState.value.fullNameText.trim()
             val email = _uiState.value.emailText.trim()
             val password = _uiState.value.passwordText
+            val confirmPassword = _uiState.value.confirmPasswordText
+
+            val isFullNameValid = fullName.isNotEmpty() && fullName.length >= 2
             val isEmailValid = email.contains("@") && email.contains(".")
             val isPasswordValid = password.length >= 6
+            val isPasswordsMatch = password == confirmPassword && password.isNotEmpty()
 
             _uiState.value = _uiState.value.copy(
+                isFullNameValid = isFullNameValid,
                 isEmailValid = isEmailValid,
-                isPasswordValid = isPasswordValid
+                isPasswordValid = isPasswordValid,
+                isPasswordsMatch = isPasswordsMatch
             )
-            if (!isEmailValid || !isPasswordValid) return@launch
 
-            // Map repository Resource<> emissions to UiState
-            repo.login(LoginRequest(email = email, password = password))
+            if (!isFullNameValid || !isEmailValid || !isPasswordValid || !isPasswordsMatch) return@launch
+
+            // Call repository
+            repo.register(RegisterRequest(fullName = fullName, email = email, password = password))
                 .collectLatest { res ->
                     when (res) {
                         is Resource.Loading -> {
                             _uiState.value = _uiState.value.copy(
-                                loginState = UiState.Loading
+                                registerState = UiState.Loading
                             )
                         }
                         is Resource.Success -> {
@@ -70,12 +90,12 @@ class LoginViewModel @Inject constructor(
                                 refreshToken = res.data.refreshToken
                             )
                             _uiState.value = _uiState.value.copy(
-                                loginState = UiState.Success(res.data)
+                                registerState = UiState.Success(res.data)
                             )
                         }
                         is Resource.Error -> {
                             _uiState.value = _uiState.value.copy(
-                                loginState = UiState.Error(res.error.uiText)
+                                registerState = UiState.Error(res.error.uiText)
                             )
                         }
                     }
@@ -83,3 +103,4 @@ class LoginViewModel @Inject constructor(
         }
     }
 }
+

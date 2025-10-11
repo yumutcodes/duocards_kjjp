@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.plugin)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -37,6 +38,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
 }
@@ -127,6 +129,8 @@ dependencies {
     implementation(libs.timber)
 //utiluties
     implementation(libs.androidx.compose.material.icons.extended)
+
+
 
 
 }

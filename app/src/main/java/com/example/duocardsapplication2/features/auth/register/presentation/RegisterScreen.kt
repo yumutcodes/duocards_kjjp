@@ -1,4 +1,4 @@
-package com.example.duocardsapplication2.features.auth.login.presentation
+package com.example.duocardsapplication2.features.auth.register.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.duocardsapplication2.core.utiluties.ui.UiState
@@ -24,36 +23,40 @@ import com.example.duocardsapplication2.features.auth.commoncomposables.AuthText
 import com.example.duocardsapplication2.features.auth.commoncomposables.NavButton
 
 @Composable
-fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
-    navigateToRegister: () -> Unit,
+fun RegisterScreen(
+    viewModel: RegisterViewModel = hiltViewModel(),
+    navigateToLogin: () -> Unit,
     navigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Handle successful login navigation
-    LaunchedEffect(uiState.loginState) {
-        if (uiState.loginState is UiState.Success) {
+    // Handle successful registration navigation
+    LaunchedEffect(uiState.registerState) {
+        if (uiState.registerState is UiState.Success) {
             navigateToHome()
         }
     }
 
-    LoginScreenContent(
-        uiState = viewModel.uiState.collectAsState().value,
+    RegisterScreenContent(
+        uiState = uiState,
+        onFullNameChanged = viewModel::onFullNameChanged,
         onEmailChanged = viewModel::onEmailChanged,
         onPasswordChanged = viewModel::onPasswordChanged,
-        onAuthConfirmButtonClicked = viewModel::onAuthConfirmButtonClicked,
-        navigateToRegister = navigateToRegister
+        onConfirmPasswordChanged = viewModel::onConfirmPasswordChanged,
+        onRegisterButtonClicked = viewModel::onRegisterButtonClicked,
+        navigateToLogin = navigateToLogin
     )
 }
 
 @Composable
-fun LoginScreenContent(
-    uiState: LoginUiState,
+fun RegisterScreenContent(
+    uiState: RegisterUiState,
+    onFullNameChanged: (String) -> Unit,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
-    onAuthConfirmButtonClicked: () -> Unit,
-    navigateToRegister: () -> Unit
+    onConfirmPasswordChanged: (String) -> Unit,
+    onRegisterButtonClicked: () -> Unit,
+    navigateToLogin: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -66,11 +69,16 @@ fun LoginScreenContent(
         verticalArrangement = Arrangement.Center
     ) {
         AuthTextField(
+            value = uiState.fullNameText,
+            onInputChanged = onFullNameChanged,
+            isValid = uiState.isFullNameValid,
+            labelText = "Full Name"
+        )
+        AuthTextField(
             value = uiState.emailText,
             onInputChanged = onEmailChanged,
             isValid = uiState.isEmailValid,
             labelText = "Email"
-
         )
         AuthTextField(
             value = uiState.passwordText,
@@ -78,29 +86,37 @@ fun LoginScreenContent(
             isValid = uiState.isPasswordValid,
             labelText = "Password"
         )
+        AuthTextField(
+            value = uiState.confirmPasswordText,
+            onInputChanged = onConfirmPasswordChanged,
+            isValid = uiState.isPasswordsMatch,
+            labelText = "Confirm Password"
+        )
         NavButton(
-            infoText = "Don't have an account? Register",
-            onClick = navigateToRegister,
-            textButtonText = "Register"
+            infoText = "Already have an account?",
+            onClick = navigateToLogin,
+            textButtonText = "Login"
         )
         AuthConfirmButton(
-            onClick = onAuthConfirmButtonClicked,
-            buttonText = "Login",
-            uiState = uiState.loginState
+            onClick = onRegisterButtonClicked,
+            buttonText = "Register",
+            uiState = uiState.registerState
         )
-
     }
 }
+
 @DevicePreviews
 @ThemePreviews
 @Composable
-fun LoginScreenPreview() {
-    LoginScreenContent(
-        uiState = LoginUiState(),
+fun RegisterScreenPreview() {
+    RegisterScreenContent(
+        uiState = RegisterUiState(),
+        onFullNameChanged = {},
         onEmailChanged = {},
         onPasswordChanged = {},
-        onAuthConfirmButtonClicked = {},
-        navigateToRegister = {}
+        onConfirmPasswordChanged = {},
+        onRegisterButtonClicked = {},
+        navigateToLogin = {}
     )
 }
 
