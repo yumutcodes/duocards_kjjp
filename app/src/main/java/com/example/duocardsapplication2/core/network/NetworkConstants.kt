@@ -1,7 +1,7 @@
 package com.example.duocardsapplication2.core.network
 
 object NetworkConstants {
-    const val BASE_URL = "http://10.0.2.2:5000/"
+    const val BASE_URL = "http://10.0.2.2:5000/api/"
     
     // Timeout constants (in seconds)
     const val CONNECT_TIMEOUT = 30L

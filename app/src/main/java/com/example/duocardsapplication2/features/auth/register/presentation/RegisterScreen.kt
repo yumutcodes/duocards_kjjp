@@ -9,12 +9,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.duocardsapplication2.core.utiluties.ui.UiState
 import com.example.duocardsapplication2.core.utiluties.ui.preview.DevicePreviews
 import com.example.duocardsapplication2.core.utiluties.ui.preview.ThemePreviews
@@ -28,7 +28,7 @@ fun RegisterScreen(
     navigateToLogin: () -> Unit,
     navigateToHome: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Event-driven navigation
     LaunchedEffect(Unit) {
@@ -41,7 +41,8 @@ fun RegisterScreen(
 
     RegisterScreenContent(
         uiState = uiState,
-        onFullNameChanged = viewModel::onFullNameChanged,
+        onNameChanged = viewModel::onNameChanged,
+        onSurnameChanged = viewModel::onSurnameChanged,
         onEmailChanged = viewModel::onEmailChanged,
         onPasswordChanged = viewModel::onPasswordChanged,
         onConfirmPasswordChanged = viewModel::onConfirmPasswordChanged,
@@ -53,7 +54,8 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreenContent(
     uiState: RegisterUiState,
-    onFullNameChanged: (String) -> Unit,
+    onNameChanged: (String) -> Unit,
+    onSurnameChanged: (String) -> Unit,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onConfirmPasswordChanged: (String) -> Unit,
@@ -71,11 +73,18 @@ fun RegisterScreenContent(
         verticalArrangement = Arrangement.Center
     ) {
         AuthTextField(
-            value = uiState.fullNameText,
-            onInputChanged = onFullNameChanged,
-            isValid = uiState.isFullNameValid,
-            labelText = "Full Name",
-            ErrorText = "Invalid full name"
+            value = uiState.NameText,
+            onInputChanged = onNameChanged,
+            isValid = true,
+            labelText = "Name",
+            ErrorText = "Invalid name"
+        )
+        AuthTextField(
+            value = uiState.SurnameText,
+            onInputChanged = onSurnameChanged,
+            isValid = true,
+            labelText = "Surname",
+            ErrorText = "Invalid Surname"
         )
         AuthTextField(
             value = uiState.emailText,
@@ -117,7 +126,8 @@ fun RegisterScreenContent(
 fun RegisterScreenPreview() {
     RegisterScreenContent(
         uiState = RegisterUiState(),
-        onFullNameChanged = {},
+        onNameChanged = {},
+        onSurnameChanged = {},
         onEmailChanged = {},
         onPasswordChanged = {},
         onConfirmPasswordChanged = {},

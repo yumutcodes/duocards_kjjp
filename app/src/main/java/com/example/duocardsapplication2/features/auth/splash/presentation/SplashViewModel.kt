@@ -4,14 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.duocardsapplication2.core.data.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class SplashNavigationEvent {
-    object NavigateToLogin : SplashNavigationEvent()
-    object NavigateToHome : SplashNavigationEvent()
+// State-based yaklaşım: Olaylar değil, durumlar
+sealed interface SplashUiState {
+    data object Loading : SplashUiState
+    data object NavigateToLogin : SplashUiState
+    data object NavigateToHome : SplashUiState
 }
 
 @HiltViewModel
@@ -19,8 +23,9 @@ class SplashViewModel @Inject constructor(
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
-    private val _navigationEvent = Channel<SplashNavigationEvent>(Channel.BUFFERED)
-    val navigationEvent = _navigationEvent.receiveAsFlow()
+    // Channel yerine StateFlow
+    private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
+    val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
     init {
         checkAuthStatus()
@@ -28,13 +33,18 @@ class SplashViewModel @Inject constructor(
 
     private fun checkAuthStatus() {
         viewModelScope.launch {
+            // (İsteğe bağlı) Splash ekranının minimum görünme süresi
+            // UX için kullanıcı logo'yu görmüş olur
+            delay(1000)
+            
             val hasToken = tokenManager.hasValidToken()
-            val event = if (hasToken) {
-                SplashNavigationEvent.NavigateToHome
+            
+            // Event göndermek yerine, state'i güncelle
+            _uiState.value = if (hasToken) {
+                SplashUiState.NavigateToHome
             } else {
-                SplashNavigationEvent.NavigateToLogin
+                SplashUiState.NavigateToLogin
             }
-            _navigationEvent.send(event)
         }
     }
 }

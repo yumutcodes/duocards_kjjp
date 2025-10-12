@@ -2,9 +2,8 @@ package com.example.duocardsapplication2.features.auth.login.presentation
 
 import com.example.duocardsapplication2.core.utiluties.ui.UiState
 import com.example.duocardsapplication2.features.auth.data.dto.LoginResponse
-import kotlinx.serialization.Serializable
 
-@Serializable
+
 data class LoginUiState(
     val emailText: String = "",
     val isEmailValid: Boolean = true,

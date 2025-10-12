@@ -10,12 +10,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun SplashScreen(
@@ -23,20 +23,32 @@ fun SplashScreen(
     navigateToLogin: () -> Unit,
     navigateToHome: () -> Unit
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { event ->
-            when (event) {
-                is SplashNavigationEvent.NavigateToLogin -> navigateToLogin()
-                is SplashNavigationEvent.NavigateToHome -> navigateToHome()
+    // State'i lifecycle-aware şekilde collect et
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // State'e göre ne gösterileceğini/yapılacağını belirle
+    when (uiState) {
+        SplashUiState.Loading -> {
+            // Loading durumunda splash içeriğini göster
+            SplashScreenContent()
+        }
+        SplashUiState.NavigateToHome -> {
+            // NavigateToHome durumuna geçildiğinde navigate et
+            LaunchedEffect(Unit) {
+                navigateToHome()
+            }
+        }
+        SplashUiState.NavigateToLogin -> {
+            // NavigateToLogin durumuna geçildiğinde navigate et
+            LaunchedEffect(Unit) {
+                navigateToLogin()
             }
         }
     }
-
-    SplashScreenContent()
 }
 
 @Composable
-fun SplashScreenContent() {
+private fun SplashScreenContent() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

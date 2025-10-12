@@ -10,12 +10,14 @@ import com.example.duocardsapplication2.features.auth.data.dto.LoginRequest
 import com.example.duocardsapplication2.features.auth.data.dto.LoginResponse
 import com.example.duocardsapplication2.features.auth.domain.IAuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,8 +35,12 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private val _navigationEvent = Channel<LoginNavigationEvent>(Channel.BUFFERED)
-    val navigationEvent = _navigationEvent.receiveAsFlow()
+    private val _navigationEvent = MutableSharedFlow<LoginNavigationEvent>(
+        replay = 1,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val navigationEvent: SharedFlow<LoginNavigationEvent> = _navigationEvent.asSharedFlow()
 
     fun onEmailChanged(newEmail: String) {
         _uiState.update { it.copy(emailText = newEmail) }
@@ -98,7 +104,7 @@ class LoginViewModel @Inject constructor(
             refreshToken = data.refreshToken
         )
         _uiState.update { it.copy(loginState = UiState.Success(data)) }
-        _navigationEvent.send(LoginNavigationEvent.NavigateToHome)
+        _navigationEvent.emit(LoginNavigationEvent.NavigateToHome)
     }
 
     private fun handleError(error: AppError) {

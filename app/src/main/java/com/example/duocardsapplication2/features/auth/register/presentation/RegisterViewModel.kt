@@ -10,12 +10,14 @@ import com.example.duocardsapplication2.features.auth.data.dto.RegisterRequest
 import com.example.duocardsapplication2.features.auth.data.dto.RegisterResponse
 import com.example.duocardsapplication2.features.auth.domain.IAuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,11 +35,18 @@ class RegisterViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
-    private val _navigationEvent = Channel<RegisterNavigationEvent>(Channel.BUFFERED)
-    val navigationEvent = _navigationEvent.receiveAsFlow()
+    private val _navigationEvent = MutableSharedFlow<RegisterNavigationEvent>(
+        replay = 1,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val navigationEvent: SharedFlow<RegisterNavigationEvent> = _navigationEvent.asSharedFlow()
 
-    fun onFullNameChanged(newFullName: String) {
-        _uiState.update { it.copy(fullNameText = newFullName) }
+    fun onNameChanged(newFullName: String) {
+        _uiState.update { it.copy(NameText = newFullName) }
+    }
+    fun onSurnameChanged(newSurname: String) {
+        _uiState.update { it.copy(SurnameText = newSurname) }
     }
 
     fun onEmailChanged(newEmail: String) {
@@ -64,33 +73,35 @@ class RegisterViewModel @Inject constructor(
 
     private fun validateAndUpdateState(): Boolean {
         val state = _uiState.value
-        val fullName = state.fullNameText.trim()
+        val name = state.NameText.trim()
+        val surName = state.SurnameText.trim()
         val email = state.emailText.trim()
         val password = state.passwordText
         val confirmPassword = state.confirmPasswordText
 
-        val fullNameError = validateFullName(fullName)
+
         val emailError = validateEmail(email)
         val passwordError = validatePassword(password)
         val passwordMatchError = validatePasswordMatch(password, confirmPassword)
 
         _uiState.update {
             it.copy(
-                isFullNameValid = fullNameError == null,
+
                 isEmailValid = emailError == null,
                 isPasswordValid = passwordError == null,
                 isPasswordsMatch = passwordMatchError == null
             )
         }
 
-        return fullNameError == null && emailError == null && 
+        return emailError == null &&
                passwordError == null && passwordMatchError == null
     }
 
     private suspend fun performRegistration() {
         val state = _uiState.value
         val request = RegisterRequest(
-            fullName = state.fullNameText.trim(),
+            name = state.NameText.trim(),
+            surname = state.SurnameText.trim(),
             email = state.emailText.trim(),
             password = state.passwordText
         )
@@ -114,7 +125,7 @@ class RegisterViewModel @Inject constructor(
             refreshToken = data.refreshToken
         )
         _uiState.update { it.copy(registerState = UiState.Success(data)) }
-        _navigationEvent.send(RegisterNavigationEvent.NavigateToHome)
+        _navigationEvent.emit(RegisterNavigationEvent.NavigateToHome)
     }
 
     private fun handleError(error: AppError) {
