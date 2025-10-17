@@ -79,22 +79,25 @@ class RegisterViewModel @Inject constructor(
         val password = state.passwordText
         val confirmPassword = state.confirmPasswordText
 
-
+        val nameError = validateFullName(name)
+        val surnameError = validateFullName(surName)
         val emailError = validateEmail(email)
         val passwordError = validatePassword(password)
         val passwordMatchError = validatePasswordMatch(password, confirmPassword)
 
         _uiState.update {
             it.copy(
-
                 isEmailValid = emailError == null,
                 isPasswordValid = passwordError == null,
                 isPasswordsMatch = passwordMatchError == null
             )
         }
 
-        return emailError == null &&
-               passwordError == null && passwordMatchError == null
+        return nameError == null &&
+               surnameError == null &&
+               emailError == null &&
+               passwordError == null && 
+               passwordMatchError == null
     }
 
     private suspend fun performRegistration() {
@@ -141,10 +144,10 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun validateEmail(email: String): AppError? {
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
         return when {
             email.isEmpty() -> AppError.FieldRequired("Email")
-            !email.contains("@") || !email.contains(".") -> 
-                AppError.InvalidFormat("Email", "example@domain.com")
+            !emailRegex.matches(email) -> AppError.InvalidFormat("Email", "valid email format")
             else -> null
         }
     }
@@ -152,7 +155,10 @@ class RegisterViewModel @Inject constructor(
     private fun validatePassword(password: String): AppError? {
         return when {
             password.isEmpty() -> AppError.FieldRequired("Password")
-            password.length < 6 -> AppError.InvalidFormat("Password", "at least 6 characters")
+            password.length < 8 -> AppError.InvalidFormat("Password", "at least 8 characters")
+            !password.any { it.isUpperCase() } -> AppError.InvalidFormat("Password", "at least 1 uppercase letter")
+            !password.any { it.isLowerCase() } -> AppError.InvalidFormat("Password", "at least 1 lowercase letter")
+            !password.any { it.isDigit() } -> AppError.InvalidFormat("Password", "at least 1 number")
             else -> null
         }
     }

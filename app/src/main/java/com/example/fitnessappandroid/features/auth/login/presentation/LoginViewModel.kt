@@ -112,10 +112,10 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun validateEmail(email: String): AppError? {
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
         return when {
             email.isEmpty() -> AppError.FieldRequired("Email")
-            !email.contains("@") || !email.contains(".") -> 
-                AppError.InvalidFormat("Email", "example@domain.com")
+            !emailRegex.matches(email) -> AppError.InvalidFormat("Email", "valid email format")
             else -> null
         }
     }
@@ -123,7 +123,10 @@ class LoginViewModel @Inject constructor(
     private fun validatePassword(password: String): AppError? {
         return when {
             password.isEmpty() -> AppError.FieldRequired("Password")
-            password.length < 6 -> AppError.InvalidFormat("Password", "at least 6 characters")
+            password.length < 8 -> AppError.InvalidFormat("Password", "at least 8 characters")
+            !password.any { it.isUpperCase() } -> AppError.InvalidFormat("Password", "at least 1 uppercase letter")
+            !password.any { it.isLowerCase() } -> AppError.InvalidFormat("Password", "at least 1 lowercase letter")
+            !password.any { it.isDigit() } -> AppError.InvalidFormat("Password", "at least 1 number")
             else -> null
         }
     }

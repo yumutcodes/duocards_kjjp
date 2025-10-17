@@ -15,7 +15,10 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import java.io.IOException
 
-class AuthRepositoryImpl @Inject constructor(private val api: AuthApiService,  private val errorMapper: ErrorMapper) : IAuthRepository {
+class AuthRepositoryImpl @Inject constructor(
+    private val api: AuthApiService,
+    private val errorMapper: ErrorMapper
+) : IAuthRepository {
     override  fun login(loginRequest: LoginRequest): Flow<Resource<LoginResponse>> = flow {
         emit(Resource.Loading)
         try {
@@ -47,4 +50,19 @@ class AuthRepositoryImpl @Inject constructor(private val api: AuthApiService,  p
             emit(Resource.Error(errorMapper.mapToAppError(t)))
         }
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun logout(): Resource<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val res = api.logout()
+                if (res.isSuccessful) {
+                    Resource.Success(Unit)
+                } else {
+                    Resource.Error(errorMapper.mapHttpCode(res.code()))
+                }
+            } catch (t: Throwable) {
+                Resource.Error(errorMapper.mapToAppError(t))
+            }
+        }
+    }
 }
