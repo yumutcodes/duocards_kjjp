@@ -1,6 +1,6 @@
 [versions]
 
-kotlinxSerializationJson = "2.2.20"#1.9.0 dı
+kotlinxSerializationJson = "1.7.3"
 datastore = "1.1.7" # DataStore'un güncel ve stabil sürümünü kontrol edip yazın
 materialIconsExtended = "1.7.8"
 room = "2.8.2"  # Room'un güncel ve stabil bir sürümünü kontrol edip yazın

@@ -194,12 +194,12 @@ The implementation expects this format from your backend:
 ## 📚 Files Changed
 
 ### New Files:
-- `app/src/main/java/com/example/duocardsapplication2/core/network/TokenAuthenticator.kt`
+- `app/src/main/java/com/example/fitnessappandroid/core/network/TokenAuthenticator.kt`
 
 ### Modified Files:
-- `app/src/main/java/com/example/duocardsapplication2/core/di/NetworkModule.kt`
-- `app/src/main/java/com/example/duocardsapplication2/core/di/ApiModule.kt`
-- `app/src/main/java/com/example/duocardsapplication2/features/auth/data/dto/RegisterResponse.kt`
+- `app/src/main/java/com/example/fitnessappandroid/core/di/NetworkModule.kt`
+- `app/src/main/java/com/example/fitnessappandroid/core/di/ApiModule.kt`
+- `app/src/main/java/com/example/fitnessappandroid/features/auth/data/dto/RegisterResponse.kt`
 
 ### Dependencies:
 No new dependencies required! Uses existing:

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DuoCards is an Android application built with Kotlin and Jetpack Compose. The app implements a flashcard/study system with user authentication and token-based session management.
+Fitness App is an Android application built with Kotlin and Jetpack Compose. The app implements a fitness tracking system with user authentication and token-based session management.
 
 **Tech Stack:**
 - Kotlin with Jetpack Compose (Material3)
@@ -33,7 +33,7 @@ DuoCards is an Android application built with Kotlin and Jetpack Compose. The ap
 ./gradlew clean
 
 # Specific test
-./gradlew test --tests "com.example.duocardsapplication2.SpecificTestClass"
+./gradlew test --tests "com.example.fitnessappandroid.SpecificTestClass"
 ```
 
 ## Project Structure
@@ -41,7 +41,7 @@ DuoCards is an Android application built with Kotlin and Jetpack Compose. The ap
 The codebase follows Clean Architecture with feature-based organization:
 
 ```
-app/src/main/java/com/example/duocardsapplication2/
+app/src/main/java/com/example/fitnessappandroid/
 ├── core/                           # Shared infrastructure
 │   ├── data/                       # TokenManager (DataStore)
 │   ├── di/                         # Hilt modules

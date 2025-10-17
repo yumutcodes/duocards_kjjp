@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.duocardsapplication2"
+    namespace = "com.example.fitnessappandroid"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.duocardsapplication2"
+        applicationId = "com.example.fitnessappandroid"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

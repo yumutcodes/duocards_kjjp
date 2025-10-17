@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "duocardsapplication2"
+rootProject.name = "fitnessAppAndroid"
 include(":app")
  
