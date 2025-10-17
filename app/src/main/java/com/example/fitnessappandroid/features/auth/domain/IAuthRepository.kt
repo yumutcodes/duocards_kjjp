@@ -15,4 +15,5 @@ Result<LoginResponse> yerine kendi yazacağın reosurce ya da appresult ile sar
 interface IAuthRepository {
     fun login(loginRequest: LoginRequest): Flow<Resource<LoginResponse>>
     fun register(registerRequest: RegisterRequest): Flow<Resource<RegisterResponse>>
+    suspend fun logout(): Resource<Unit>
 }
