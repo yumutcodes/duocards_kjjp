@@ -31,14 +31,7 @@ class AuthInterceptor @Inject constructor(
             originalRequest
         }
 
-        val response = chain.proceed(newRequest)
-
-        // Handle token refresh if we get a 401 Unauthorized
-        if (response.code == 401) {
-            // TODO: Implement token refresh logic
-            // For now, we'll just return the response
-        }
-
-        return response
+        // TokenAuthenticator handles 401 responses and token refresh
+        return chain.proceed(newRequest)
     }
 }
